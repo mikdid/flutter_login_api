@@ -44,3 +44,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+#php mysql identifiant
+lib/api/server/php/connexion_private.php
