@@ -25,6 +25,13 @@ class CustomStringParam{
 
 }
 
+class CustomUrlParam{
+
+    static String urlApiLoginBase = 'https://www.mikdid.fr';
+    static String urlApiLoginSignin = '/tuto_flutter/login.php';
+
+}
+
 
 extension CustomColorScheme on ColorScheme {
   

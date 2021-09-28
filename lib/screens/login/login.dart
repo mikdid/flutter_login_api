@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:login_screen_api/helpers/crypto.dart';
 import 'package:login_screen_api/screens/login/register.dart';
 import 'package:login_screen_api/config/config.dart';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({ Key? key }) : super(key: key);
@@ -11,8 +15,61 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  //class LoginScreen extends StatelessWidget  {
-  
+  String errorMessage = "";
+  String successMessage = "";
+  bool _loading = false;
+  final _key = GlobalKey<FormState>(); //pour formulaire
+
+  // fonction pour appel http api login
+  void signIn(String _email, String _pwd) async {
+
+     setState(() {
+       errorMessage = ''; // on reset message erreur
+       _loading = true; // on affiche loader
+     });
+
+    final response = await http.post(
+                      Uri.parse(CustomUrlParam.urlApiLoginBase + CustomUrlParam.urlApiLoginSignin), 
+                      body: {"email": encrypt(_email), "pwd": encrypt(_pwd)}
+                    );
+    
+    if(response.statusCode == 200){
+
+      var result;
+      var data = jsonDecode(decrypt(response.body));
+      if(data != null && data['data'] != null) {
+        result = data['data'];
+      } else {
+        result = null;
+      }
+
+      if(result != null && result[1] != null && result[2] != null && result[1] == 1){ //success
+
+        UserModel.saveUserSession(UserModel.fromJson(result[2]));  //info user sont result[2] => on le met en session
+        
+        setState(() {
+          successMessage = 'login success';
+          errorMessage = '';
+          _loading = false;
+          widget.isLogged.call(); // pôur session
+        });
+      } else {
+        setState(() {
+          successMessage = '';
+          errorMessage = 'error login api ';
+          if (result != null && result[0] != null){
+            errorMessage = errorMessage + result[0];
+          }
+          _loading = false;
+        });
+      }
+    }
+  }
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     
