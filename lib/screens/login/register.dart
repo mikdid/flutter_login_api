@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:login_screen_api/helpers/crypto.dart';
 import 'package:login_screen_api/screens/login/login.dart';
 import 'package:login_screen_api/config/config.dart';
+import 'package:http/http.dart' as http;
 
 
 class RegisterScreen extends StatefulWidget {
@@ -11,7 +15,45 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  //class LoginScreen extends StatelessWidget  {
+
+  final _key = GlobalKey<FormState>();
+  bool _loading = false;
+
+  bool logged = false;
+
+  String errorMessage = "";
+  String successMessage = "";
+  
+
+  void registerUser(String _login, String _pwd, String _email, String _tel) async {
+
+    setState(() {
+      errorMessage = ''; 
+      successMessage = '';
+      _loading = true; // on affiche loader
+    });
+
+    final response = await http.post(
+                      Uri.parse(CustomUrlParam.urlApiLoginBase + CustomUrlParam.urlApiLoginRegisterUser), 
+                      body: {"login": encrypt(_login), "password": encrypt(_pwd),"email": encrypt(_email),"tel": encrypt(_tel) }
+                    );
+
+    if(response.statusCode == 200){
+
+      var result;
+      var data = jsonDecode(decrypt(response.body));
+
+      if(data != null && data['data'] != null) {
+        result = data['data'];
+      } else {
+        result = null;
+      }
+
+    }
+
+  }
+
+
 
   @override
   Widget build(BuildContext context) {

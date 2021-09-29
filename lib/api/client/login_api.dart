@@ -8,7 +8,6 @@ import 'package:login_screen_api/models/user/userModel.dart';
 class UrlLogin{
 
   static String urlBase = 'https://www.mikdid.fr';
-  
   static String signIn = urlBase + '/tuto_flutter/login.php';
   
 

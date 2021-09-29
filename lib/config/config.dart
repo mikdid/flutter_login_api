@@ -33,7 +33,7 @@ class CustomUrlParam{
 
     static String urlApiLoginBase = 'http://127.0.0.1:8899';
     static String urlApiLoginSignin = '/flu/login_screen/signin';
-
+    static String urlApiLoginRegisterUser = '/flu/login_screen/signup';
 }
 
 
