@@ -27,8 +27,12 @@ class CustomStringParam{
 
 class CustomUrlParam{
 
-    static String urlApiLoginBase = 'https://www.mikdid.fr';
-    static String urlApiLoginSignin = '/tuto_flutter/login.php';
+    //appel sur mikdid php
+    //static String urlApiLoginBase = 'https://www.mikdid.fr';
+    //static String urlApiLoginSignin = '/tuto_flutter/login.php';
+
+    static String urlApiLoginBase = 'http://127.0.0.1:8899';
+    static String urlApiLoginSignin = '/flu/login_screen/signin';
 
 }
 

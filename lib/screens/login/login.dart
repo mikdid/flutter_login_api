@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _key = GlobalKey<FormState>(); //pour formulaire
 
   // fonction pour appel http api login
-  void signIn(String _email, String _pwd) async {
+  void signIn(String _login, String _pwd) async {
 
      setState(() {
        errorMessage = ''; // on reset message erreur
@@ -30,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final response = await http.post(
                       Uri.parse(CustomUrlParam.urlApiLoginBase + CustomUrlParam.urlApiLoginSignin), 
-                      body: {"email": encrypt(_email), "pwd": encrypt(_pwd)}
+                      body: {"login": encrypt(_login), "password": encrypt(_pwd)}
                     );
     
     if(response.statusCode == 200){
@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
         result = null;
       }
 
-      if(result != null && result[1] != null && result[2] != null && result[1] == 1){ //success
+      /*if(result != null && result[1] != null && result[2] != null && result[1] == 1){ //success
 
         UserModel.saveUserSession(UserModel.fromJson(result[2]));  //info user sont result[2] => on le met en session
         
@@ -62,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
           }
           _loading = false;
         });
-      }
+      }*/
     }
   }
 
@@ -74,6 +74,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     
     Size size = MediaQuery.of(context).size;
+
+    final txtLogin = TextEditingController();
+    final txtPassword = TextEditingController();
 
     return SafeArea(
       child:Scaffold(
@@ -124,122 +127,129 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: EdgeInsets.symmetric(
                   horizontal: 20.0,
                 ),
-
-                child:  Center(
-                  child:Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    
-                    Container(
-                      constraints: BoxConstraints(minWidth: 200, maxWidth: 600),
-                      alignment: Alignment.centerLeft,
-                      padding: EdgeInsets.symmetric(horizontal: 40.0),
-                      child: Text(
-                        CustomStringParam.loginScreenTitle,
-                        style: TextStyle(
-                          fontWeight:FontWeight.bold,
-                          color: Theme.of(context).colorScheme.loginScreenTtitre,  
-                          fontSize: 32
-                          ),
-                          textAlign: TextAlign.left,
-                      ),
-                    ),
-                    SizedBox(
-                      height: size.height * 0.04,
-                    ),
-                    Container(
-                      constraints: BoxConstraints(minWidth: 100, maxWidth: 500),
-                      alignment: Alignment.center,
-                      margin:EdgeInsets.symmetric(horizontal: 40.0),
-                      child:TextField(
-                        decoration:InputDecoration(
-                          labelText: CustomStringParam.loginScreenLabelLogin,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: size.height * 0.03,
-                    ),
-                    Container(
-                      constraints: BoxConstraints(minWidth: 100, maxWidth: 500),
-                      alignment: Alignment.center,
-                      margin:EdgeInsets.symmetric(horizontal: 40.0),
-                      child:TextField(
-                        decoration:InputDecoration(
-                          labelText: CustomStringParam.loginScreenLabelPwd,
-                        ),
-                        obscureText: true,
-                      ),
-                    ),
-                    Container(
-                      constraints: BoxConstraints(minWidth: 100, maxWidth: 500),
-                      alignment: Alignment.centerRight,
-                      margin:EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
-                      child:Text(
-                        CustomStringParam.loginScreenTextForgotPwd,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).colorScheme.loginScreenLink,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: size.height * 0.03,
-                    ),
-                    Container(
-                      constraints: BoxConstraints(minWidth: 100, maxWidth: 500),
-                      alignment: Alignment.center,
-                      margin:EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                      child:ElevatedButton( 
-                        onPressed: 
-                           () => { },
-                          style: ElevatedButton.styleFrom(
-                            primary: Theme.of(context).colorScheme.loginScreenBtnSubmit, 
-                            side: BorderSide(color: Colors.grey, width: 1),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                          ),
-                          child: Container(
-                          alignment: Alignment.center,
-                          height: 40,
-                          width: size.width * 0.5,
-                          //padding:EdgeInsets.all(0),
-                          child: Text(
-                            CustomStringParam.loginScreenBtnSbmitText,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0,
+                child:Form(
+                  key: _key,
+                  child:  Center(
+                    child:Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      
+                      Container(
+                        constraints: BoxConstraints(minWidth: 200, maxWidth: 600),
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.symmetric(horizontal: 40.0),
+                        child: Text(
+                          CustomStringParam.loginScreenTitle,
+                          style: TextStyle(
+                            fontWeight:FontWeight.bold,
+                            color: Theme.of(context).colorScheme.loginScreenTtitre,  
+                            fontSize: 32
                             ),
-                          ), 
+                            textAlign: TextAlign.left,
                         ),
                       ),
-                    ),
-                    /*SizedBox(
-                      height: size.height * 0.03,
-                    ),*/
-                    Container(
-                      width: size.width,
-                      alignment:Alignment.center ,
-                      margin: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                      child: GestureDetector(
-                        onTap: () => {
-                          Navigator.push(context,MaterialPageRoute(builder: (context) => RegisterScreen())),
-                        },
-                        child: Text(CustomStringParam.loginScreenTextNotAccount,
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.bold,
-                          color : Theme.of(context).colorScheme.loginScreenLink,
-                          decoration: TextDecoration.underline,
+                      SizedBox(
+                        height: size.height * 0.04,
+                      ),
+                      Container(
+                        constraints: BoxConstraints(minWidth: 100, maxWidth: 500),
+                        alignment: Alignment.center,
+                        margin:EdgeInsets.symmetric(horizontal: 40.0),
+                        child:TextField(
+                          controller: txtLogin,
+                          decoration:InputDecoration(
+                            labelText: CustomStringParam.loginScreenLabelLogin,
                           ),
                         ),
                       ),
+                      SizedBox(
+                        height: size.height * 0.03,
+                      ),
+                      Container(
+                        constraints: BoxConstraints(minWidth: 100, maxWidth: 500),
+                        alignment: Alignment.center,
+                        margin:EdgeInsets.symmetric(horizontal: 40.0),
+                        child:TextField(
+                          controller: txtPassword,
+                          decoration:InputDecoration(
+                            labelText: CustomStringParam.loginScreenLabelPwd,
+                          ),
+                          obscureText: true,
+                        ),
+                      ),
+                      Container(
+                        constraints: BoxConstraints(minWidth: 100, maxWidth: 500),
+                        alignment: Alignment.centerRight,
+                        margin:EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
+                        child:Text(
+                          CustomStringParam.loginScreenTextForgotPwd,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.loginScreenLink,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.03,
+                      ),
+                      Container(
+                        constraints: BoxConstraints(minWidth: 100, maxWidth: 500),
+                        alignment: Alignment.center,
+                        margin:EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                        child:ElevatedButton( 
+                            onPressed: () {
+                            if(_key.currentState!.validate()){
+                              signIn(txtLogin.text, txtPassword.text);
+                            }
+                          },
+                            style: ElevatedButton.styleFrom(
+                              primary: Theme.of(context).colorScheme.loginScreenBtnSubmit, 
+                              side: BorderSide(color: Colors.grey, width: 1),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                            ),
+                            child: Container(
+                            alignment: Alignment.center,
+                            height: 40,
+                            width: size.width * 0.5,
+                            //padding:EdgeInsets.all(0),
+                            child: Text(
+                              CustomStringParam.loginScreenBtnSbmitText,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.0,
+                              ),
+                            ), 
+                          ),
+                        ),
+                      ),
+                      /*SizedBox(
+                        height: size.height * 0.03,
+                      ),*/
+                      Container(
+                        width: size.width,
+                        alignment:Alignment.center ,
+                        margin: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                        child: GestureDetector(
+                          onTap: () => {
+                            Navigator.push(context,MaterialPageRoute(builder: (context) => RegisterScreen())),
+                          },
+                          child: Text(CustomStringParam.loginScreenTextNotAccount,
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.bold,
+                            color : Theme.of(context).colorScheme.loginScreenLink,
+                            decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.03,
+                      ),
+                    ],
                     ),
-                    SizedBox(
-                      height: size.height * 0.03,
-                    ),
-                  ],
                   ),
                 ),
               ),
