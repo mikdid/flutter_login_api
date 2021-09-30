@@ -43,11 +43,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
       var result;
       var data = jsonDecode(decrypt(response.body));
 
-      if(data != null && data['data'] != null) {
-        result = data['data'];
+      if(data != null) {
+        result = data;
+      } 
+
+      if(result.length > 0 && result['statut'] == 'success' && result['user'] != null){ //success
+        setState(() {
+          successMessage = 'register success';
+          errorMessage = '';
+          _loading = false;
+        });
       } else {
-        result = null;
+        setState(() {
+          successMessage = '';
+          errorMessage = 'error api : ' + result['message'];
+          _loading = false;
+        });
       }
+
 
     }
 
@@ -207,7 +220,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: ElevatedButton(
                             onPressed: () {
                               if(_key.currentState!.validate()){
-                                registerUser(txtLogin.text, txtPassword.text, txtEmail.text, '0606060606');
+                                if (txtPassword.value == txtPasswordConfirm.value) {
+                                  registerUser(txtLogin.text, txtPassword.text, txtEmail.text, '0606060606');
+                                } else {
+                                  print('les mots de passe sont différents');
+                                }
                               }
                             },
                             style: ElevatedButton.styleFrom(
