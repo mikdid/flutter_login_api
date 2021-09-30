@@ -68,15 +68,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
 
-
+  final TextEditingController txtLogin = TextEditingController();
+  final TextEditingController txtPassword = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     
     Size size = MediaQuery.of(context).size;
-
-    final txtLogin = TextEditingController();
-    final txtPassword = TextEditingController();
 
     return SafeArea(
       child:Scaffold(

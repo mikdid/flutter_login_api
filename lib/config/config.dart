@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomStringParam{
-
+class CustomStringParam {
   // login screen
   static String loginScreenAppBarText = 'Welcome';
   static String loginScreenTitle = 'login'.toUpperCase();
@@ -10,7 +9,7 @@ class CustomStringParam{
   static String loginScreenTextForgotPwd = "Forgot your password ?";
   static String loginScreenBtnSbmitText = 'sign in'.toUpperCase();
   static String loginScreenTextNotAccount = "Don't have a account ? sign up ";
-  static String loginScreenPathBottomImage = 'assets/images/bottom_blue.png' ;
+  static String loginScreenPathBottomImage = 'assets/images/bottom_blue.png';
 
   //register screen
   static String registerScreenAppBarText = 'Back';
@@ -20,25 +19,30 @@ class CustomStringParam{
   static String registerScreenLabelPwd = 'Password';
   static String registerScreenLabelPwdConfirm = 'Password confirm';
   static String registerScreenBtnSbmitText = 'sign up'.toUpperCase();
-  static String registerScreenTextAlreadyAccount = "Already have a account ? sign in ";
-  static String registerScreenPathBottomImage = 'assets/images/bottom_blue.png' ;
-
+  static String registerScreenTextAlreadyAccount =
+      "Already have a account ? sign in ";
+  static String registerScreenPathBottomImage = 'assets/images/bottom_blue.png';
 }
 
-class CustomUrlParam{
+class CustomUrlParam {
+  //si appel sur mikdid php
+  //static String urlApiLoginBase = 'https://www.mikdid.fr';
+  //static String urlApiLoginSignin = '/tuto_flutter/login.php';
 
-    //appel sur mikdid php
-    //static String urlApiLoginBase = 'https://www.mikdid.fr';
-    //static String urlApiLoginSignin = '/tuto_flutter/login.php';
+  // si navigateur en local
+  //static String urlApiLoginBase = 'http://127.0.0.1:8899';
 
-    static String urlApiLoginBase = 'http://127.0.0.1:8899';
-    static String urlApiLoginSignin = '/flu/login_screen/signin';
-    static String urlApiLoginRegisterUser = '/flu/login_screen/signup';
+  // si emulateur android
+  static String urlApiLoginBase = 'http://10.0.2.2:8899';
+
+  // si appel api mikdid.fr
+  //static String urlApiLoginBase = 'https://www.mikdid.fr';
+
+  static String urlApiLoginSignin = '/flu/login_screen/signin';
+  static String urlApiLoginRegisterUser = '/flu/login_screen/signup';
 }
-
 
 extension CustomColorScheme on ColorScheme {
-  
   /* -- ! Change param here ! -- */
 
   //login screen
@@ -51,9 +55,6 @@ extension CustomColorScheme on ColorScheme {
   static Color alertInfo = Color(0xFF17a2b8);
   static Color alertWarning = Color(0xFFffc107);
   static Color alertError = Color(0xFFdc3545);
-
-
-  
 
   /* -- ! Don't touch here ! -- */
 
@@ -68,13 +69,11 @@ extension CustomColorScheme on ColorScheme {
       brightness == Brightness.light ? loginLightAccent : loginDarkAccent;
   Color get loginScreenLink =>
       brightness == Brightness.light ? loginLightAccent : loginDarkAccent;
-  
 
   // alert
   Color get success =>
       brightness == Brightness.light ? alertSuccess : alertDarkMode;
-  Color get info =>
-      brightness == Brightness.light ? alertInfo : alertDarkMode;
+  Color get info => brightness == Brightness.light ? alertInfo : alertDarkMode;
   Color get warning =>
       brightness == Brightness.light ? alertWarning : alertDarkMode;
   Color get danger =>
