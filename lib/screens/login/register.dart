@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:login_screen_api/helpers/alertHelper.dart';
 import 'package:login_screen_api/helpers/crypto.dart';
 import 'package:login_screen_api/screens/login/login.dart';
 import 'package:login_screen_api/config/config.dart';
@@ -20,16 +21,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _loading = false;
 
   bool logged = false;
-
-  String errorMessage = "";
-  String successMessage = "";
+  String resultMessage = "";
+  String resultTitre = "";      
+  
   
 
-  void registerUser(String _login, String _pwd, String _email, String _tel) async {
+  registerUser(String _login, String _pwd, String _email, String _tel) async {
 
     setState(() {
-      errorMessage = ''; 
-      successMessage = '';
+      resultTitre = '';
+      resultMessage = '';
       _loading = true; // on affiche loader
     });
 
@@ -49,21 +50,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if(result.length > 0 && result['statut'] == 'success' && result['user'] != null){ //success
         setState(() {
-          successMessage = 'register success';
-          errorMessage = '';
+          resultTitre = 'Success';
+          resultMessage = 'User created with success';
           _loading = false;
         });
       } else {
         setState(() {
-          successMessage = '';
-          errorMessage = 'error api : ' + result['message'];
+          resultTitre = 'Erreur';
+          resultMessage = 'Error created user';
           _loading = false;
         });
       }
-
-
     }
-
   }
 
 
@@ -218,12 +216,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           margin:
                               EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if(_key.currentState!.validate()){
-                                if (txtPassword.value == txtPasswordConfirm.value) {
-                                  registerUser(txtLogin.text, txtPassword.text, txtEmail.text, '0606060606');
+                                if (txtPassword.text == txtPasswordConfirm.text) {
+                                  
+                                  await registerUser(txtLogin.text, txtPassword.text, txtEmail.text, '0606060606');
+                                  showSimpleAlert(context,resultTitre,resultMessage);
                                 } else {
-                                  print('les mots de passe sont différents');
+                                  showSimpleAlert(context,'erreur','les mots de passe sont différents');
+                                  //print('les mots de passe sont différents');
                                 }
                               }
                             },
