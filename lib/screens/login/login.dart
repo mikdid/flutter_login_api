@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:login_screen_api/helpers/crypto.dart';
+import 'package:login_screen_api/models/user/userModel.dart';
 import 'package:login_screen_api/screens/login/register.dart';
 import 'package:login_screen_api/config/config.dart';
 import 'package:http/http.dart' as http;
@@ -15,24 +16,55 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  String errorMessage = "";
-  String successMessage = "";
-  bool _loading = false;
+  
   final _key = GlobalKey<FormState>(); //pour formulaire
+  bool _loading = false;  
+  bool logged = false;
+  bool loginOk = false;
+  String resultMessage = "";
+  String resultTitre = ""; 
+
 
   // fonction pour appel http api login
   void signIn(String _login, String _pwd) async {
 
-     setState(() {
-       errorMessage = ''; // on reset message erreur
-       _loading = true; // on affiche loader
-     });
+    setState(() {
+      resultTitre = '';
+      resultMessage = '';
+      _loading = true; // show loader
+    });
 
     final response = await http.post(
                       Uri.parse(CustomUrlParam.urlApiLoginBase + CustomUrlParam.urlApiLoginSignin), 
                       body: {"login": encrypt(_login), "password": encrypt(_pwd)}
                     );
     
+    if(response.statusCode == 200){
+
+      var result;
+      var data = jsonDecode(decrypt(response.body));
+
+      if(data != null) {
+        result = data;
+      } 
+
+      if(result.length > 0 && result['statut'] == 'success' && result['user'] != null && result['user']['_id'] != ''){ //success
+        setState(() {
+          resultTitre = 'Success';
+          resultMessage = 'User created with success';
+          _loading = false;
+          loginOk = true;
+          UserModel.saveUserSession(UserModel.fromJson(result['user']));  //save user to session
+        });
+      } else {
+        setState(() {
+          resultTitre = 'Erreur';
+          resultMessage = 'Error created user';
+          _loading = false;
+        });
+      }
+    }
+
     if(response.statusCode == 200){
 
       var result;

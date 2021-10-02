@@ -21,6 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _loading = false;
 
   bool logged = false;
+  bool registerOk = false;
   String resultMessage = "";
   String resultTitre = "";      
   
@@ -48,11 +49,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         result = data;
       } 
 
-      if(result.length > 0 && result['statut'] == 'success' && result['user'] != null){ //success
+      if(result.length > 0 && result['statut'] == 'success' && result['user'] != null && result['user']['_id'] != ''){ //success
         setState(() {
           resultTitre = 'Success';
           resultMessage = 'User created with success';
           _loading = false;
+          registerOk = true;
         });
       } else {
         setState(() {
@@ -221,10 +223,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 if (txtPassword.text == txtPasswordConfirm.text) {
                                   
                                   await registerUser(txtLogin.text, txtPassword.text, txtEmail.text, '0606060606');
-                                  showSimpleAlert(context,resultTitre,resultMessage);
+                                  await showSimpleAlert(context,resultTitre,resultMessage); // wait click ok btn
+
+                                  if(registerOk == true){
+                                      Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) =>LoginScreen())); // go to login page
+                                  }
                                 } else {
                                   showSimpleAlert(context,'erreur','les mots de passe sont différents');
-                                  //print('les mots de passe sont différents');
+
                                 }
                               }
                             },
