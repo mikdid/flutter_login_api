@@ -25,8 +25,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String resultMessage = "";
   String resultTitre = "";      
   
-  
-
   registerUser(String _login, String _pwd, String _email, String _tel) async {
 
     setState(() {

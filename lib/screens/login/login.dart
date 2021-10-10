@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:login_screen_api/helpers/alertHelper.dart';
 import 'package:login_screen_api/helpers/crypto.dart';
 import 'package:login_screen_api/models/user/userModel.dart';
 import 'package:login_screen_api/screens/login/register.dart';
@@ -26,79 +27,70 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
   // fonction pour appel http api login
-  void signIn(String _login, String _pwd) async {
+  signIn(String _login, String _pwd) async {
 
-    setState(() {
-      resultTitre = '';
-      resultMessage = '';
-      _loading = true; // show loader
-    });
+    try{
+      
+      setState(() {
+        resultTitre = '';
+        resultMessage = '';
+        _loading = true; // show loader
+      });
 
-    final response = await http.post(
-                      Uri.parse(CustomUrlParam.urlApiLoginBase + CustomUrlParam.urlApiLoginSignin), 
-                      body: {"login": encrypt(_login), "password": encrypt(_pwd)}
-                    );
-    
-    if(response.statusCode == 200){
+      final response = await http.post(
+                        Uri.parse(CustomUrlParam.urlApiLoginBase + CustomUrlParam.urlApiLoginSignin), 
+                        body: {"login": encrypt(_login), "password": encrypt(_pwd)}
+                      );
+      
+      if(response.statusCode == 200){
 
-      var result;
-      var data = jsonDecode(decrypt(response.body));
+        var result;
+        var decryptedData;
+        var data = jsonDecode(response.body); // sinon erreur decrypt car parfois des "" entoure le body
 
-      if(data != null) {
-        result = data;
-      } 
+        if(data != null) {
+          decryptedData = decrypt(data);
+          if(decryptedData != ''){
+            result = jsonDecode(decryptedData);
+          }      
+        } 
 
-      if(result.length > 0 && result['statut'] == 'success' && result['user'] != null && result['user']['_id'] != ''){ //success
+        if(result.length > 0 && result['statut'] == 'success' && result['user'] != null && result['user']['_id'] != ''){ //success
+          setState(() {
+            resultTitre = 'Success';
+            resultMessage = 'User logged with success';
+            _loading = false;
+            loginOk = true;
+            UserModel.saveUserSession(UserModel.fromJson(result['user']));  //save user to session
+          });
+        } else {
+          setState(() {
+            resultTitre = 'Erreur';
+            resultMessage = 'Error login user';
+            _loading = false;
+          });
+        }
+      } else{
         setState(() {
-          resultTitre = 'Success';
-          resultMessage = 'User created with success';
+          resultTitre = 'Error';
+          resultMessage = 'Error login user';
           _loading = false;
           loginOk = true;
-          UserModel.saveUserSession(UserModel.fromJson(result['user']));  //save user to session
         });
-      } else {
-        setState(() {
-          resultTitre = 'Erreur';
-          resultMessage = 'Error created user';
+      } 
+    }catch(error){
+      setState(() {
+          resultTitre = 'Error';
+          resultMessage = 'Error login process';
           _loading = false;
-        });
-      }
-    }
-
-    if(response.statusCode == 200){
-
-      var result;
-      var data = jsonDecode(decrypt(response.body));
-      if(data != null && data['data'] != null) {
-        result = data['data'];
-      } else {
-        result = null;
-      }
-
-      /*if(result != null && result[1] != null && result[2] != null && result[1] == 1){ //success
-
-        UserModel.saveUserSession(UserModel.fromJson(result[2]));  //info user sont result[2] => on le met en session
-        
-        setState(() {
-          successMessage = 'login success';
-          errorMessage = '';
-          _loading = false;
-          widget.isLogged.call(); // pôur session
-        });
-      } else {
-        setState(() {
-          successMessage = '';
-          errorMessage = 'error login api ';
-          if (result != null && result[0] != null){
-            errorMessage = errorMessage + result[0];
-          }
-          _loading = false;
-        });
-      }*/
+          loginOk = true;
+      });
     }
   }
 
+  void saveUserSession(){
 
+  }
 
   final TextEditingController txtLogin = TextEditingController();
   final TextEditingController txtPassword = TextEditingController();
@@ -115,15 +107,6 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Theme.of(context).colorScheme.loginScreenAppBar, // Colors.indigo.shade100,
           elevation: 0.0,
           titleSpacing: 20.0,
-          /*leading: IconButton(
-            icon:Icon(
-              Icons.help,
-            ),
-            color: Colors.black,
-            onPressed: () =>  {
-
-            }, // on retourn à la vue correspondant à l'index 2, 
-          ),*/
           actions: <Widget>[
             Padding(
               padding: EdgeInsets.only(right: 20.0),
@@ -227,9 +210,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         alignment: Alignment.center,
                         margin:EdgeInsets.symmetric(horizontal: 30, vertical: 20),
                         child:ElevatedButton( 
-                            onPressed: () {
+                            onPressed: () async {
                             if(_key.currentState!.validate()){
-                              signIn(txtLogin.text, txtPassword.text);
+                              await signIn(txtLogin.text, txtPassword.text);
+                              await showSimpleAlert(context,resultTitre,resultMessage); // wait click ok btn
+
+                              if(loginOk == true){
+                                saveUserSession();
+                              }
                             }
                           },
                             style: ElevatedButton.styleFrom(
