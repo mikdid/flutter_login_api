@@ -27,42 +27,58 @@ class _RegisterScreenState extends State<RegisterScreen> {
   
   registerUser(String _login, String _pwd, String _email, String _tel) async {
 
-    setState(() {
-      resultTitre = '';
-      resultMessage = '';
-      _loading = true; // on affiche loader
-    });
+    try{
+      
+      setState(() {
+        resultTitre = '';
+        resultMessage = '';
+        _loading = true; // on affiche loader
+      });
 
-    final response = await http.post(
-                      Uri.parse(CustomUrlParam.urlApiLoginBase + CustomUrlParam.urlApiLoginRegisterUser), 
-                      body: {"login": encrypt(_login), "password": encrypt(_pwd),"email": encrypt(_email),"tel": encrypt(_tel) }
-                    );
+      final response = await http.post(
+                        Uri.parse(CustomUrlParam.urlApiLoginBase + CustomUrlParam.urlApiLoginRegisterUser), 
+                        body: {"login": encrypt(_login), "password": encrypt(_pwd),"email": encrypt(_email),"tel": encrypt(_tel) }
+                      );
 
-    if(response.statusCode == 200){
+      if(response.statusCode == 200){
 
-      var result;
-      var data = jsonDecode(decrypt(response.body));
+        //var body = jsonDecode(decrypt(response.body));
 
-      if(data != null) {
-        result = data;
-      } 
+        var body = jsonDecode(response.body);
+        var user;
 
-      if(result.length > 0 && result['statut'] == 'success' && result['user'] != null && result['user']['_id'] != ''){ //success
-        setState(() {
-          resultTitre = 'Success';
-          resultMessage = 'User created with success';
+        if(body != null && body['statut'] == 'success' && body['data'] != null){
+          
+          user = jsonDecode(decrypt(body['data'])); // data est aussi encodé en json
+
+          if(user != null && user['_id'] != ''){
+            setState(() {
+              resultTitre = 'Success';
+              resultMessage = 'User created with success';
+              _loading = false;
+              registerOk = true;
+            });
+          }
+        }
+
+        if(registerOk != true){
+          setState(() {
+            resultTitre = 'Erreur';
+            resultMessage = 'Error created user';
+            _loading = false;
+          });
+        }     
+      }
+    }catch(error){
+      setState(() {
+          resultTitre = 'Error';
+          resultMessage = 'Error login process';
           _loading = false;
           registerOk = true;
-        });
-      } else {
-        setState(() {
-          resultTitre = 'Erreur';
-          resultMessage = 'Error created user';
-          _loading = false;
-        });
-      }
+      });
     }
   }
+
 
 
 

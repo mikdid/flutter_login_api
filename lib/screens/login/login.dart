@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:login_screen_api/helpers/alertHelper.dart';
 import 'package:login_screen_api/helpers/crypto.dart';
 import 'package:login_screen_api/models/user/userModel.dart';
+import 'package:login_screen_api/screens/home/home.dart';
 import 'package:login_screen_api/screens/login/register.dart';
 import 'package:login_screen_api/config/config.dart';
 import 'package:http/http.dart' as http;
@@ -44,32 +45,32 @@ class _LoginScreenState extends State<LoginScreen> {
       
       if(response.statusCode == 200){
 
-        var result;
-        var decryptedData;
-        var data = jsonDecode(response.body); // sinon erreur decrypt car parfois des "" entoure le body
+        var body = jsonDecode(response.body);
+        var user;
 
-        if(data != null) {
-          decryptedData = decrypt(data);
-          if(decryptedData != ''){
-            result = jsonDecode(decryptedData);
-          }      
-        } 
+        if(body != null && body['statut'] == 'success' && body['data'] != null){
+          
+          user = jsonDecode(decrypt(body['data']));
 
-        if(result.length > 0 && result['statut'] == 'success' && result['user'] != null && result['user']['_id'] != ''){ //success
-          setState(() {
-            resultTitre = 'Success';
-            resultMessage = 'User logged with success';
-            _loading = false;
-            loginOk = true;
-            UserModel.saveUserSession(UserModel.fromJson(result['user']));  //save user to session
-          });
-        } else {
+          if(user != null && user['_id'] != ''){
+            setState(() {
+              resultTitre = 'Success';
+              resultMessage = 'User logged with success';
+              _loading = false;
+              loginOk = true;
+            });
+
+            UserModel.saveUserSession(UserModel.fromJson(user));  //save user to session
+          }
+        }
+
+        if(loginOk != true){
           setState(() {
             resultTitre = 'Erreur';
-            resultMessage = 'Error login user';
+            resultMessage = 'Error created user';
             _loading = false;
           });
-        }
+        }   
       } else{
         setState(() {
           resultTitre = 'Error';
@@ -217,6 +218,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               if(loginOk == true){
                                 saveUserSession();
+
+                                Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) =>HomeScreen())); // go to login page
+                                  
                               }
                             }
                           },
