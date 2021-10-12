@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:login_screen_api/class/menuItemChoice.dart';
 import 'package:login_screen_api/helpers/alertHelper.dart';
 import 'package:login_screen_api/helpers/crypto.dart';
 import 'package:login_screen_api/models/user/userModel.dart';
@@ -9,6 +11,9 @@ import 'package:login_screen_api/screens/login/register.dart';
 import 'package:login_screen_api/config/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_screen_api/widgets/loading.dart';
+
+
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({ Key? key }) : super(key: key);
@@ -90,14 +95,18 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  //*********** menu appbarr ***************
+  //*********** menu appBarr ***************
 
+  final List<MenuItemChoice> appBarMenuItemList = const <MenuItemChoice>[
+    const MenuItemChoice(title: 'Settings', icon: Icons.settings),
+    const MenuItemChoice(title: 'Help', icon: Icons.help),
+    ];
 
   //click sur le menu dans l'appBarr
-  void handleAppBarMenuClicked(BuildContext context, String value) {
-    switch (value) {
-      case 'help':
-        print('help');
+  void handleAppBarMenuClicked(BuildContext context, MenuItemChoice value) {
+    switch (value.title) {
+      case 'Help':
+        print('Help');
         //Navigator.push() ...
         break;
       case 'Settings':
@@ -126,13 +135,25 @@ class _LoginScreenState extends State<LoginScreen> {
             elevation: 0.0,
             titleSpacing: 20.0,
             actions: <Widget>[
-              PopupMenuButton<String>(
+              PopupMenuButton<MenuItemChoice>(
                 onSelected: (val) => handleAppBarMenuClicked(context, val),
                 itemBuilder: (BuildContext context) {
-                  return {'Settings','help'}.map((String choice) {
-                    return PopupMenuItem<String>(
-                      value: choice,
-                      child: Text(choice),
+                  return appBarMenuItemList.map((MenuItemChoice itemMenu) {
+                    return PopupMenuItem<MenuItemChoice>(
+                      value: itemMenu,
+                      child: Row(
+                        children: <Widget>[
+                          Icon(
+                            itemMenu.icon,
+                          ),
+                          Container(
+                            width: 10.0,
+                          ),
+                          Text(
+                            itemMenu.title,
+                          ),
+                        ],
+                      ),
                     );
                   }).toList();
                 },
