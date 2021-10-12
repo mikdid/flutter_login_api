@@ -22,6 +22,9 @@ class CustomStringParam {
   static String registerScreenTextAlreadyAccount =
       "Already have a account ? sign in ";
   static String registerScreenPathBottomImage = 'assets/images/bottom_blue.png';
+
+  //home screen
+  static String homeScreenAppBarText = 'Dashboard';
 }
 
 class CustomUrlParam {
@@ -45,9 +48,15 @@ class CustomUrlParam {
 extension CustomColorScheme on ColorScheme {
   /* -- ! Change param here ! -- */
 
-  //login screen
+  //login + register screen
   static Color loginLightAccent = Colors.blue.shade300;
   static Color loginDarkAccent = Color(0x2228a745);
+
+  //home screen
+  static Color homeLightAccent = Colors.blue.shade300;
+  static Color homeDarkAccent = Color(0x2228a745);
+
+
 
   // alert
   static Color alertDarkMode = Color(0x2228a745);
@@ -78,4 +87,8 @@ extension CustomColorScheme on ColorScheme {
       brightness == Brightness.light ? alertWarning : alertDarkMode;
   Color get danger =>
       brightness == Brightness.light ? alertError : alertDarkMode;
+
+  //home screen
+  Color get homeScreenAppBar =>
+      brightness == Brightness.light ? homeLightAccent : homeDarkAccent;
 }

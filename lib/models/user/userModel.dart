@@ -24,7 +24,7 @@ class UserModel {
   Map<String, dynamic> toMap() => { "id": this._id, "login": login, "password": password, "email": email, "tel": tel };
 
   // fonction qui va sauvegarder la session de l'utilisateur
-  static void saveUserSession(UserModel user) async {
+  static saveUserSession(UserModel user) async {
   
     SharedPreferences pref = await SharedPreferences.getInstance(); //SharedPreferences ne sauvegarde que les string et les int
 
@@ -35,7 +35,7 @@ class UserModel {
   }
 
   // fonction qui va chercher la session de l'utilisateur
-  static void getUserSession() async {
+  static getUserSession() async {
     
     SharedPreferences pref = await SharedPreferences.getInstance();
 
@@ -48,6 +48,12 @@ class UserModel {
     } else {
       sessionUser = null;
     }
+  }
+
+  static void logOut() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.remove("userlogged");
+    sessionUser = null;
   }
 
 }
