@@ -42,11 +42,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         body: {"login": encrypt(_login), "password": encrypt(_pwd),"email": encrypt(_email),"tel": encrypt(_tel) }
                       );
 
+      var body = jsonDecode(response.body); //on decode ici pour pouvoir l'utiliser dans les messages d'erreur
+       
       if(response.statusCode == 200){
 
-        //var body = jsonDecode(decrypt(response.body));
-
-        var body = jsonDecode(response.body);
         var user;
 
         if(body != null && body['statut'] == 'success' && body['data'] != null){
@@ -62,19 +61,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
             });
           }
         }
-
-        if(registerOk != true){
-          setState(() {
-            resultTitre = 'Erreur';
-            resultMessage = 'Error created user';
-            _loading = false;
-          });
-        }     
       }
+
+      if(registerOk != true){
+
+        var message = 'error create user';
+        if(body != null && body['message'] != ''){ message = body['message']; }
+
+        setState(() {
+          resultTitre = 'Erreur';
+          resultMessage = message;
+          _loading = false;
+        });
+      }     
+      
     }catch(error){
       setState(() {
           resultTitre = 'Error';
-          resultMessage = 'Error login process';
+          resultMessage = 'Error register process';
           _loading = false;
           registerOk = true;
       });
