@@ -19,9 +19,10 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
 
   final _key = GlobalKey<FormState>();
-  bool _loading = false;
 
-  bool logged = false;
+  final RegExp emailRegex = RegExp(r"[a-z0-9\._-]+@[a-z0-9\._-]+\.[a-z]+"); // controle email
+  bool _isSecret = true; // pour password
+  bool _loading = false;
   bool registerOk = false;
   String resultMessage = "";
   String resultTitre = "";      
@@ -107,7 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
               color: Colors.black,
-              onPressed: () => Navigator.pop(
+              onPressed: () => Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
@@ -173,8 +174,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             constraints: BoxConstraints(minWidth: 100, maxWidth: 500),
                             alignment: Alignment.center,
                             margin: EdgeInsets.symmetric(horizontal: 40.0, vertical:0.0),
-                            child: TextField(
+                            child: TextFormField(
                               controller: txtLogin,
+                              validator: (value) => value == null || value.isEmpty
+                                            ? 'Login is required' 
+                                            : null,
                               decoration: InputDecoration(
                                 labelText: CustomStringParam.registerScreenLabelLogin,
                               ),
@@ -187,8 +191,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             constraints: BoxConstraints(minWidth: 100, maxWidth: 500),
                             alignment: Alignment.center,
                             margin: EdgeInsets.symmetric(horizontal: 40.0),
-                            child: TextField(
+                            child: TextFormField(
                               controller: txtEmail,
+                              validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Email is required';
+                                  // ignore: todo
+                                  } else if(!emailRegex.hasMatch(value)){ // TODO à changer
+                                    return 'Email is invalid';
+                                  }
+                                  return null;
+                               },
                               decoration: InputDecoration(
                                 labelText: CustomStringParam.registerScreenLabelEmail,
                               ),
@@ -201,10 +214,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             constraints: BoxConstraints(minWidth: 100, maxWidth: 500),
                             alignment: Alignment.center,
                             margin: EdgeInsets.symmetric(horizontal: 40.0),
-                            child: TextField(
+                            child: TextFormField(
                               controller: txtPassword,
+                              validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Password is required';
+                                  // ignore: todo
+                                  } else if(value.length < 4){ // TODO à changer
+                                    return 'Password invalid (4 caracters min)';
+                                  }
+                                  return null;
+                               },
                               decoration: InputDecoration(
                                 labelText: CustomStringParam.registerScreenLabelPwd,
+                                suffixIcon: InkWell( 
+                                onTap: () => {
+                                  setState( () => { 
+                                    _isSecret = !_isSecret 
+                                  }),
+                                },
+                                child: Icon(
+                                  !_isSecret ? Icons.visibility : Icons.visibility_off, //oeil password
+                                ),
+                              ),
                               ),
                               obscureText: true,
                             ),
@@ -216,8 +248,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             constraints: BoxConstraints(minWidth: 100, maxWidth: 500),
                             alignment: Alignment.center,
                             margin: EdgeInsets.symmetric(horizontal: 40.0),
-                            child: TextField(
+                            child: TextFormField(
                               controller: txtPasswordConfirm,
+                               validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Password confirmation is required';
+                                  } else if(value != txtPassword.text){
+                                    return 'Passwords are different';
+                                  }
+                                  return null;
+                               },
                               decoration: InputDecoration(
                                 labelText: CustomStringParam.registerScreenLabelPwdConfirm,
                               ),
@@ -241,12 +281,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     await showSimpleAlert(context,resultTitre,resultMessage); // wait click ok btn
 
                                     if(registerOk == true){
-                                        Navigator.push(context,
+                                        Navigator.pushReplacement(context,
                                           MaterialPageRoute(builder: (context) =>LoginScreen())); // go to login page
                                     }
                                   } else {
                                     showSimpleAlert(context,'erreur','les mots de passe sont différents');
-
                                   }
                                 }
                               },
@@ -284,7 +323,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           margin: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
                           child: GestureDetector(
                             onTap: () => {
-                              Navigator.push(context,MaterialPageRoute(builder: (context) => LoginScreen())),
+                              Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => LoginScreen())),
                             },
                             child: Text(CustomStringParam.registerScreenTextAlreadyAccount,
                             style: TextStyle(
